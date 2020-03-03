@@ -1,6 +1,8 @@
 #include <DHT.h>
 #include <LiquidCrystal_I2C.h>
 
+#define MAX_ANALOG_VALUE 1024.0
+
 /*
  * A0 - Potmeter temperature
  * A1 - Potmeter humidity
@@ -86,10 +88,10 @@ void loop() {
   /*
    * Reading the new values set with the control knobs
    */
-  // Convert temperature to a range between 20-35 deg (1024/15=68.2)
-  temp_set = 20 + (float)analogRead(A0) / 68.2;
-  // Convert humidity to a range between 20-100% (1024/80=12.8)
-  hum_set = 20 + (float)analogRead(A1) / 12.8;
+  // Convert temperature to a range between 20-35 deg
+  temp_set = 20.0 + (float)analogRead(A0) / (MAX_ANALOG_VALUE/15.0);
+  // Convert humidity to a range between 20-100%
+  hum_set = 20.0 + (float)analogRead(A1) / (MAX_ANALOG_VALUE/80.0);
 
   /*
    * Reading the values of the top and bottom DHTs
