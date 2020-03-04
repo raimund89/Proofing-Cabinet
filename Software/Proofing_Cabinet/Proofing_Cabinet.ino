@@ -90,10 +90,16 @@ void loop() {
   /*
    * Reading the new values set with the control knobs
    */
-  // Convert temperature to a range between 20-35 deg
-  temp_set = 20.0 + (float)analogRead(A0) / (MAX_ANALOG_VALUE/15.0);
+  // Convert temperature to a range between 20-40 deg
+  temp_set = 20.0 + (float)analogRead(A0) / (MAX_ANALOG_VALUE/20.0);
   // Convert humidity to a range between 20-100%
   hum_set = 20.0 + (float)analogRead(A1) / (MAX_ANALOG_VALUE/80.0);
+  
+  // Error testing
+  if(temp_set < 20.0 || temp_set > 40.0)
+    temp_set = 24.0;
+  if(hum_set < 20.0 || hum_set > 100.0)
+    hum_set = 80.0;
 
   /*
    * Reading the values of the top and bottom DHTs
@@ -102,6 +108,16 @@ void loop() {
   temp_low = dht_low.readHumidity();
   hum_high = dht_high.readHumidity();
   temp_high = dht_high.readHumidity();
+  
+  // Some testing, to get rid of unlikely values
+  if(hum_low < 10.0 || hum_low > 100.0)
+    hum_low = 80.0; // Minimum value for proofing
+  if(hum_high < 10.0 || hum_high > 100.0)
+    hum_high = 80.0; // Minimum value for proofing
+  if(temp_low < 10.0 || temp_low > 40.0)
+    temp_low = 24.0; // Best temperature for proofing
+  if(temp_high < 10.0 || temp_high > 40.0)
+    temp_high = 24.0; // Best temperature for proofing
 
   /*
    * We have measured everything we need to measure.
