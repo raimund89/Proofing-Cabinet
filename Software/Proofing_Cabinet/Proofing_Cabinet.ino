@@ -82,6 +82,8 @@ float hum_high = 0;
 float temp_low = 0;
 float temp_high = 0;
 
+unsigned long humidity_last_time = 0;
+
 // Check the values below with isnan(float)
 
 void loop() {
@@ -113,10 +115,23 @@ void loop() {
     digitalWrite(9, LOW);
 
   // If the humidity is too low, enable atomizer
-  if(hum_high < hum_set)
-    digitalWrite(10, HIGH);
-  else
+  // But for 1 second, and only every 20 seconds
+  if(hum_high < hum_set) {
+    if(millis() - humidity_last_time > 20000) {
+      // It's already 20 seconds ago, so turn it on
+      digitalWrite(10, HIGH);
+      humidity_last_time = millis();
+    } else if(millis() - humidity_last_time > 2000) {
+      // Turned it on 2 seconds ago, now turn it off
+      digitalWrite(10, LOW);
+    } else {
+      // In any other case, probably error, so turn it off anyway
+      digitalWrite(10, LOW);
+    }
+  } else {
+    // Turn it off no matter what
     digitalWrite(10, LOW);
+  }
 
   // If heater or atomizer is on, or if the difference
   // between the top and bottom DHTs is too large,
